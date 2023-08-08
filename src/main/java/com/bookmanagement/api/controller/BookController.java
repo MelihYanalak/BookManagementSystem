@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/v1/")
 public class BookController {
 
-    private BookService bookService;
+    final private BookService bookService;
 
     @Autowired
     public BookController(BookService bookService) {
@@ -24,15 +24,14 @@ public class BookController {
     }
 
     @GetMapping("books")
-    public ResponseEntity<List<BookEntity>> getAllBooks(){
-        List<BookEntity> books = new ArrayList<>();
-        books.add(new BookEntity(1,"first book","fist author",1997,"72727272"));
-        return ResponseEntity.ok(books);
+    public ResponseEntity<List<BookDto>> getAllBooks(){
+        return new ResponseEntity<>(bookService.getAllBooks(),HttpStatus.OK);
+
     }
 
     @GetMapping("books/{id}")
-    public BookEntity getBookById(@PathVariable int id){
-        return new BookEntity(id,"first book","fist author",1997,"72727272");
+    public ResponseEntity<BookDto> getBookById(@PathVariable int id){
+        return new ResponseEntity<>(bookService.getBookById(id),HttpStatus.OK);
     }
 
     @PostMapping("books")
@@ -42,17 +41,15 @@ public class BookController {
     }
 
     @PutMapping("books/{id}")
-    public ResponseEntity<BookEntity> updateBook(@PathVariable("id") int id,@RequestBody BookEntity book){
-        System.out.println(book.getAuthor());
-        System.out.println(book.getTitle());
-        book.setId(id);
-        return new ResponseEntity<>(book,HttpStatus.OK);
+    public ResponseEntity<BookDto> updateBook(@PathVariable("id") int id,@RequestBody BookDto bookDto){
+        BookDto updatedBook = bookService.updateBook(bookDto,id);
+        return new ResponseEntity<>(updatedBook,HttpStatus.OK);
     }
 
     @DeleteMapping("books/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable("id") int id){
-        System.out.println(id);
-        return ResponseEntity.ok("Book deleted successfully");
+        String response = bookService.deleteBook(id);
+        return new ResponseEntity<>(response,HttpStatus.OK);
 
 
     }
